@@ -1,24 +1,25 @@
 // Deep-dip recovery bot for the make.fun BTC race (cbBTC/USDC, Orca, 1m bars).
 //
-// Idea: BTC grinds down in slow waves. When the price falls 3.5% below its
-// rolling 7-hour high, the dip is deep enough that a short-term recovery is
-// likely, so buy with full equity. Sell the recovery at +1.4% over cost,
-// cut the loss at -1.5%, or give up after 8h if neither triggers.
+// Idea: BTC grinds down in slow waves. When the price falls 4.5% below its
+// rolling 5-hour high, the dip is deep enough that a short-term recovery is
+// likely, so buy with full equity. Sell the recovery at +2.2% over cost,
+// cut the loss at -2.0%, or give up after 8h if neither triggers.
 // Long only, at most one open position, full equity per trade.
 // Deterministic: float64 math only, no clock/env/random.
 //
-// Dev window (24h to 2026-11-13 23:14 UTC): net PnL +$11.66, 6 trades,
-// 66.7% win rate, max drawdown 2% (inside the 25% race guardrail).
-// Grid-tested against the baselines (all negative) and against trailing-stop
-// and re-arm variants (both worse); the fixed take-profit wins here.
+// Dev window (24h to 2026-11-13 23:14 UTC): net PnL +$21.99, 2 trades,
+// 100% win rate, max drawdown 2% (inside the 25% race guardrail).
+// Variant v2 of the v1 "Deep-dip recovery" bot (+$11.66, 6 trades, 66.7%):
+// deeper dip, wider take-profit and stop-loss. Only 2 trades in the dev
+// window, so this variant is fragile and may be overfit.
 import { BPS, runBars, type Bar, type BarsState, type BuyInput, type SellInput } from './vendor/makefun-bars.ts';
 
 // ---- strategy parameters ----
 const CONFIG = {
-  highBars: 420,        // 7h rolling high window
-  dipBps: 350,          // buy when 3.5% below the 7h high
-  takeProfitBps: 140,   // +1.4% over cost
-  stopLossBps: 150,     // -1.5% under cost
+  highBars: 300,        // 5h rolling high window
+  dipBps: 450,          // buy when 4.5% below the 5h high
+  takeProfitBps: 220,   // +2.2% over cost
+  stopLossBps: 200,     // -2.0% under cost
   maxHoldBars: 480,     // exit after 8h if neither TP nor SL hit
   maxSlippageBps: 100,
 };
